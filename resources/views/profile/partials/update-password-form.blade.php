@@ -9,7 +9,8 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('password.update') }}"
+      class="mt-6 space-y-6 bg-gray-50 p-6 rounded-xl shadow">
         @csrf
         @method('put')
 
@@ -32,7 +33,9 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button class="bg-indigo-600 hover:bg-indigo-700">
+              Save Password
+            </x-primary-button>
 
             @if (session('status') === 'password-updated')
                 <p

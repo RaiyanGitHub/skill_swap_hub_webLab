@@ -45,9 +45,8 @@
                 <x-secondary-button x-on:click="$dispatch('close')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
-
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
+                <x-danger-button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg">
+                    Delete Account
                 </x-danger-button>
             </div>
         </form>
