@@ -17,17 +17,36 @@
         </div>
 
         <!-- Password -->
-        <div class="mt-4">
+       <div class="mt-4">
+            <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+            <!-- FIXED WRAPPER -->
+                <div class="relative mt-1">
+
+                <!-- INPUT -->
+                <input id="password"
+                 type="password"
+                 name="password"
+                 required
+                 class="w-full px-4 py-2 pr-16 rounded-lg bg-black/20 border border-black/30 font-medium text-sm text-gray-700 dark:text-gray-300 outline-none">
+
+                <!-- SHOW BUTTON -->
+                <button type="button"
+                    onclick="togglePassword()"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-300 hover:text-white">
+                    show
+                </button>
+
+            </div>
+
+            <div class="mt-2">
+                <p id="strengthText" class="text-sm text-gray-500"></p>
+
+            </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
-
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
@@ -50,3 +69,25 @@
         </div>
     </form>
 </x-guest-layout>
+<script>
+    function togglePassword() {
+    const input = document.getElementById("password");
+    const input2 = document.getElementById("password_confirmation");
+    input.type = input.type === "password" ? "text" : "password";
+    input2.type = input2.type === "password" ? "text" : "password";
+}
+       const passwordInput = document.getElementById("password");
+    const strengthText = document.getElementById("strengthText");
+
+    passwordInput.addEventListener("input", () => {
+        let val = passwordInput.value;
+
+        if (val.length < 6) {
+            strengthText.innerText = "Weak password ❌";
+        } else if (val.length < 10) {
+            strengthText.innerText = "Medium password ⚠️";
+        } else {
+            strengthText.innerText = "Strong password ✅";
+        }
+    });
+</script>
