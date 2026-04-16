@@ -29,4 +29,23 @@ Route::get('/solar-wallpaper', function () {
     return view('solar-wallpaper');
 
 });
+
+
+
+Route::get('/my-skills', function () {
+    $skills = [
+        'Web Development',
+        'Graphic Design',
+        'Video Editing',
+        'Public Speaking',
+        'Digital Marketing',
+        'Photography',
+        'Content Writing',
+        'UI/UX Design',
+        'Programming',
+        'SEO Optimization'
+    ];
+
+    return view('skills', compact('skills'));
+})->middleware('auth');
 require __DIR__.'/auth.php';

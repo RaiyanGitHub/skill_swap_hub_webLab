@@ -29,7 +29,7 @@
                  type="password"
                  name="password"
                  required
-                 class="w-full px-4 py-2 pr-16 rounded-lg bg-black/20 border border-black/30 font-medium text-sm text-gray-700 dark:text-gray-300 outline-none">
+                 class="w-full px-4 py-2 pr-16 rounded-lg bg-black/20 border border-black/30 font-medium text-sm text-black/700 dark:text-black/300 outline-none">
 
                 <!-- SHOW BUTTON -->
                 <button type="button"
@@ -41,7 +41,7 @@
             </div>
 
             <div class="mt-2">
-                <p id="strengthText" class="text-sm text-gray-500"></p>
+                <p id="strengthText" class="text-sm text-white"></p>
 
             </div>
 

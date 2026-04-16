@@ -21,10 +21,12 @@
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                <div class="bg-white rounded-xl shadow-lg p-6 hover:scale-105 transition">
-                    <h3 class="text-lg font-semibold text-indigo-600">Your Skills</h3>
-                    <p class="text-2xl font-bold mt-2">5</p>
-                </div>
+                <a href="{{ url('/my-skills') }}">
+                    <div class="bg-white p-6 rounded shadow cursor-pointer hover:scale-105 transition">
+                    <h2 class="text-blue-500">Your Skills</h2>
+                     <p class="text-xl font-bold">5</p>
+                     </div>
+                </a>
 
                 <div class="bg-white rounded-xl shadow-lg p-6 hover:scale-105 transition">
                     <h3 class="text-lg font-semibold text-green-600">Swaps</h3>
