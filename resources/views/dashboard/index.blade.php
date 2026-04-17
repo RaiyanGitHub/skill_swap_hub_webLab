@@ -1,4 +1,3 @@
-{{--Deprecated but the editor or code breaks when this file is deleted so find a way to remove it safely in the future--}}
 <x-app-layout>
     <div class="p-6">
 
@@ -8,11 +7,20 @@
 
             <!-- Skills Card -->
             <a href="{{ route('dashboard.skills') }}">
-                <div class="bg-white p-6 rounded shadow cursor-pointer hover:scale-105 transition">
-                    <h2 class="text-blue-500">Your Skills</h2>
-                    <p class="text-xl font-bold">5</p>
-                </div>
-            </a>
+    <div class="bg-white p-6 rounded shadow cursor-pointer hover:scale-105 transition">
+
+        <h2 class="text-blue-500">Your Skills</h2>
+
+        <!-- 🔥 total -->
+        <p class="text-xl font-bold">{{ $skillsCount }}</p>
+
+        <!-- 🔥 optional breakdown -->
+        <div class="text-sm text-gray-500 mt-2">
+            Know: {{ $skillsKnowCount }} | Learn: {{ $skillsLearnCount }}
+        </div>
+
+    </div>
+</a>
 
             <!-- Swaps -->
             <div class="bg-white p-6 rounded shadow">
