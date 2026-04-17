@@ -1,93 +1,113 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+<div class="min-h-screen flex items-center justify-center relative bg-[#0b1120] overflow-hidden">
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+    <!-- BACKGROUND BLUR (IMPORTANT) -->
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475')]
+                bg-cover bg-center opacity-30 blur-sm"></div>
+
+    <!-- CARD -->
+    <div class="relative w-full max-w-sm p-8 rounded-2xl
+                bg-white/5 backdrop-blur-xl border border-white/10
+                shadow-[0_0_60px_rgba(255,255,255,0.15)]">
+
+        <!-- HEADER -->
+        <div class="text-center mb-6">
+            <h2 class="text-white text-lg font-semibold tracking-wide">SKILL SWAP HUB</h2>
+            <h3 class="text-2xl text-white font-bold mt-2">Sign Up</h3>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <!-- FORM -->
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
 
-        <!-- Password -->
-       <div class="mt-4">
-            <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <!-- NAME -->
+            <div class="mb-4">
+                <label class="text-sm text-gray-300">Full Name</label>
+                <input type="text" name="name"
+                    class="w-full px-4 py-2 mt-1 rounded-lg bg-white/5 border border-white/20 text-white
+                           focus:ring-2 focus:ring-cyan-400 outline-none"
+                    placeholder="John Doe" required>
+            </div>
 
-            <!-- FIXED WRAPPER -->
+            <!-- EMAIL -->
+            <div class="mb-4">
+                <label class="text-sm text-gray-300">Email address</label>
+                <input type="email" name="email"
+                    class="w-full px-4 py-2 mt-1 rounded-lg bg-white/5 border border-white/20 text-white
+                           focus:ring-2 focus:ring-cyan-400 outline-none"
+                    placeholder="you@example.com" required>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="mb-4">
+                <label class="text-sm text-gray-300">Password</label>
+
                 <div class="relative mt-1">
+                    <input id="password" type="password" name="password"
+                        class="w-full px-4 py-2 pr-16 rounded-lg bg-white/5 border border-white/20 text-white
+                               focus:ring-2 focus:ring-cyan-400 outline-none"
+                        required>
 
-                <!-- INPUT -->
-                <input id="password"
-                 type="password"
-                 name="password"
-                 required
-                 class="w-full px-4 py-2 pr-16 rounded-lg bg-black/20 border border-black/30 font-medium text-sm text-black/700 dark:text-black/300 outline-none">
-
-                <!-- SHOW BUTTON -->
-                <button type="button"
-                    onclick="togglePassword()"
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-300 hover:text-white">
-                    show
-                </button>
-
+                    <button type="button"
+                        onclick="togglePassword()"
+                        class="absolute right-3 top-2 text-sm text-gray-400 hover:text-white">
+                        Show
+                    </button>
+                </div>
             </div>
 
-            <div class="mt-2">
-                <p id="strengthText" class="text-sm text-white"></p>
+            <!-- CONFIRM PASSWORD -->
+            <div class="mb-4">
+                <label class="text-sm text-gray-300">Confirm Password</label>
 
+                <div class="relative mt-1">
+                    <input id="password_confirmation" type="password" name="password_confirmation"
+                        class="w-full px-4 py-2 pr-16 rounded-lg bg-white/5 border border-white/20 text-white
+                               focus:ring-2 focus:ring-cyan-400 outline-none"
+                        required>
+                </div>
             </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <!-- BUTTON -->
+            <button type="submit"
+                class="w-full py-2 mt-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-900
+                       text-white font-semibold hover:opacity-90 transition shadow-lg">
+                Register
+            </button>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+            <!-- DIVIDER -->
+            <div class="flex items-center my-5">
+                <div class="flex-1 h-px bg-white/20"></div>
+                <span class="px-3 text-gray-400 text-sm">Or continue with</span>
+                <div class="flex-1 h-px bg-white/20"></div>
+            </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+            <!-- SOCIAL -->
+            <div class="flex justify-center gap-4 mb-4">
+                <button type="button" class="p-2 rounded-lg border border-white/20 text-white">G</button>
+                <button type="button" class="p-2 rounded-lg border border-white/20 text-white">🐙</button>
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+            <!-- LOGIN LINK -->
+            <p class="text-center text-sm text-gray-400">
+                Already have an account?
+                <a href="{{ route('login') }}" class="text-white underline">Sign in</a>
+            </p>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
+        </form>
+    </div>
+
+</div>
 </x-guest-layout>
+
 <script>
-    function togglePassword() {
-    const input = document.getElementById("password");
-    const input2 = document.getElementById("password_confirmation");
-    input.type = input.type === "password" ? "text" : "password";
-    input2.type = input2.type === "password" ? "text" : "password";
+function togglePassword() {
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("password_confirmation");
+
+    const type = password.type === "password" ? "text" : "password";
+
+    if (password) password.type = type;
+    if (confirmPassword) confirmPassword.type = type;
 }
-       const passwordInput = document.getElementById("password");
-    const strengthText = document.getElementById("strengthText");
-
-    passwordInput.addEventListener("input", () => {
-        let val = passwordInput.value;
-
-        if (val.length < 6) {
-            strengthText.innerText = "Weak password ❌";
-        } else if (val.length < 10) {
-            strengthText.innerText = "Medium password ⚠️";
-        } else {
-            strengthText.innerText = "Strong password ✅";
-        }
-    });
 </script>

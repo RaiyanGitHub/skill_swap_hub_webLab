@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
-
+use App\Models\BannedEmail;
 class RegisteredUserController extends Controller
 {
     /**
@@ -28,13 +28,21 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
+
+
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+
+    $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        if (BannedEmail::where('email', $request->email)->exists()) {
+            return back()->withErrors(['email' => 'This email is banned.']);
+        }
+
 
         $user = User::create([
             'name' => $request->name,
@@ -44,8 +52,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);  remove this so does not login directly after registration
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
     }
 }
