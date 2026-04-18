@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SwapController;
+use App\Http\Controllers\RatingController;
 
 
 Route::get('/', function () {
@@ -23,8 +25,22 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     Route::delete('/skills/{id}', [SkillController::class, 'destroy'])->name('skills.destroy');
 });
 
+Route::middleware('auth')->get('/dashboard/explore', [DashboardController::class, 'explore'])->name('dashboard.explore');
 
 
+
+Route::middleware('auth')->group(function () {
+
+    Route::post('/swap/send/{user}', [SwapController::class, 'send'])->name('swap.send');
+
+    Route::post('/swap/{id}/accept', [SwapController::class, 'accept'])->name('swap.accept');
+    Route::post('/swap/{id}/reject', [SwapController::class, 'reject'])->name('swap.reject');
+    Route::post('/swap/{id}/complete', [SwapController::class, 'complete'])->name('swap.complete');
+
+    Route::post('/rating/{swap}', [RatingController::class, 'store'])->name('rating.store');
+});
+
+Route::middleware('auth')->get('/requests', [SwapController::class, 'incoming'])->name('requests.incoming');
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

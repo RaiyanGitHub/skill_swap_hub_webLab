@@ -26,6 +26,14 @@
                 <p class="text-xl font-bold">2</p>
             </div>
 
+            <-- Explore Skills -->
+            <div>
+            <a href="{{ route('dashboard.explore') }}"
+                class="bg-indigo-500 px-40 py-20 rounded-lg text-black font-bold text-lg hover:bg-indigo-600 transition">
+                🔎 Explore & Match
+            </a>
+            </div>
+
         </div>
 
     </div>

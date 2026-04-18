@@ -11,8 +11,8 @@ class AdminController extends Controller
     // Dashboard (count)
 public function dashboard()
 {
-    $users = User::latest()->get(); // ✅ list
-    $totalUsers = User::count(); // ✅ count
+    $users = User::latest()->get(); //   list
+    $totalUsers = User::count(); //  count
 
     return view('admin.dashboard', compact('users', 'totalUsers'));
 }
