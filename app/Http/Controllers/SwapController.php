@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SwapRequest;
-
+use Illuminate\Database\QueryException;
 
 
 class SwapController extends Controller
@@ -14,12 +14,12 @@ class SwapController extends Controller
 {
     $sender = auth()->id();
 
-    //  same user ke request dite parbe na
+    //  prevent self request
     if ($sender == $id) {
         return back()->with('error', 'Invalid request');
     }
 
-    //  duplicate check
+    // 🔒 duplicate check (your existing logic - keep it)
     $exists = \App\Models\SwapRequest::where('sender_id', $sender)
         ->where('receiver_id', $id)
         ->where('skill_offered', $request->skill_offered)
@@ -28,24 +28,24 @@ class SwapController extends Controller
         ->exists();
 
     if ($exists) {
-        return back()->with('error', 'Request already sent!');
+        return back()->with('error', '⚠️ Request already sent!');
     }
 
-    // SAME SKILL (know == learn) block
-    if ($request->skill_offered == $request->skill_requested) {
-        return back()->with('error', 'Invalid skill swap');
+    try {
+        // ✅ create
+        \App\Models\SwapRequest::create([
+            'sender_id' => $sender,
+            'receiver_id' => $id,
+            'skill_offered' => $request->skill_offered,
+            'skill_requested' => $request->skill_requested,
+            'status' => 'pending'
+        ]);
+    } catch (QueryException $e) {
+        // 🔥 DB level duplicate fallback (IMPORTANT)
+        return back()->with('error', '⚠️ Duplicate request blocked!');
     }
 
-    //  create
-    \App\Models\SwapRequest::create([
-        'sender_id' => $sender,
-        'receiver_id' => $id,
-        'skill_offered' => $request->skill_offered,
-        'skill_requested' => $request->skill_requested,
-        'status' => 'pending'
-    ]);
-
-    return back()->with('success', 'Request sent!');
+    return back()->with('success', '✅ Request sent!');
 }
 
     //  ACCEPT
@@ -92,9 +92,9 @@ public function complete($id)
     public function incoming()
 {
     $requests = SwapRequest::where('receiver_id', auth()->id())
-        ->with('sender')
-        ->latest()
-        ->get();
+    ->with(['sender.skills']) // 🔥 IMPORTANT
+    ->latest()
+    ->get();
 
     return view('dashboard.requests', compact('requests'));
 }

@@ -16,15 +16,31 @@
             {{ $r->sender->name }}
         </h3>
 
-        <!-- DETAILS -->
-        <p class="text-sm text-gray-300 mb-2">
-            Wants to learn: <span class="text-blue-400">{{ $r->skill_requested }}</span>
-        </p>
+        <!-- 🔵 KNOW SKILLS -->
+        <div class="mb-2">
+            <p class="text-green-400 text-sm">Knows:</p>
 
-        <p class="text-sm text-gray-300 mb-2">
-            Offers: <span class="text-green-400">{{ $r->skill_offered }}</span>
-        </p>
+            <div class="flex flex-wrap gap-2 mt-1">
+                @foreach($r->sender->skills->where('type','know') as $skill)
+                    <span class="bg-green-500/20 px-2 py-1 rounded text-sm">
+                    {{ $skill->name }}
+                    </span>
+                @endforeach
+            </div>
+        </div>
 
+        <!-- 🔵 WANTS -->
+        <div class="mb-3">
+        <p class="text-blue-400 text-sm">Wants to learn:</p>
+
+            <div class="flex flex-wrap gap-2 mt-1">
+            @foreach($r->sender->skills->where('type','learn') as $skill)
+                <span class="bg-blue-500/20 px-2 py-1 rounded text-sm">
+                    {{ $skill->name }}
+                </span>
+            @endforeach
+            </div>
+        </div>
         <!-- STATUS -->
         <p class="mb-3">
             Status:
@@ -60,14 +76,24 @@
         @endif
 
         @if($r->status == 'accepted')
+            <a href="{{ route('video.call', $r->id) }}"
+                class="mt-2 inline-block px-4 py-1 bg-blue-600 rounded">
+                Skill Swap Session
+            </a>
             <form method="POST" action="{{ route('swap.complete', $r->id) }}">
                 @csrf
-                <button class="mt-2 px-3 py-1 bg-purple-600 rounded">
+                <button class="mt-2 px-3 py-1 bg-purple-600 rounded" action="{{ route('swap.complete', $r->id) }}">
                     Mark as Completed
                 </button>
             </form>
         @endif
 
+         @if($r->status == 'completed')
+            <a href="{{ route('rating.store', $r->id) }}"
+                class="mt-2 inline-block px-4 py-1 bg-purple-600 rounded">
+                ⭐ Rate this Swap
+            </a>
+        @endif
     </div>
 
     @empty

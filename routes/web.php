@@ -8,28 +8,51 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SwapController;
 use App\Http\Controllers\RatingController;
 
+/*
+--------------------------------------------------------------------------
+ Public
+--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-
-
-Route::middleware(['auth'])->prefix('dashboard')->group(function () {
-
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/my-skills', [SkillController::class, 'index'])->name('dashboard.skills');
-    Route::post('/my-skills', [SkillController::class, 'store'])->name('skills.store');
-
-    Route::delete('/skills/{id}', [SkillController::class, 'destroy'])->name('skills.destroy');
+Route::get('/solar-wallpaper', function () {
+    return view('solar-wallpaper');
 });
 
-Route::middleware('auth')->get('/dashboard/explore', [DashboardController::class, 'explore'])->name('dashboard.explore');
+/*
+--------------------------------------------------------------------------
+ Authenticated User Routes
+--------------------------------------------------------------------------
+*/
 
+Route::middleware(['auth'])->group(function () {
 
+    /*
+    --------------------------
+     Dashboard + Skills
+    --------------------------
+    */
+    Route::prefix('dashboard')->group(function () {
 
-Route::middleware('auth')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/my-skills', [SkillController::class, 'index'])->name('dashboard.skills');
+        Route::post('/my-skills', [SkillController::class, 'store'])->name('skills.store');
+        Route::delete('/skills/{id}', [SkillController::class, 'destroy'])->name('skills.destroy');
+
+        //  Explore
+        Route::get('/explore', [DashboardController::class, 'explore'])->name('dashboard.explore');
+    });
+
+    /*
+    --------------------------
+     Swap System
+    --------------------------
+    */
+    Route::get('/requests', [SwapController::class, 'incoming'])->name('requests.incoming');
 
     Route::post('/swap/send/{user}', [SwapController::class, 'send'])->name('swap.send');
 
@@ -37,18 +60,39 @@ Route::middleware('auth')->group(function () {
     Route::post('/swap/{id}/reject', [SwapController::class, 'reject'])->name('swap.reject');
     Route::post('/swap/{id}/complete', [SwapController::class, 'complete'])->name('swap.complete');
 
+    /*
+    |--------------------------
+    | Video Call (Jitsi)
+    |--------------------------
+    */
+    Route::get('/call/{id}', function ($id) {
+        return view('video.call', ['room' => "swap_".$id."_".auth()->id()]);
+    })->name('video.call');
+
+
+    /*
+    --------------------------
+     Rating
+    --------------------------
+    */
     Route::post('/rating/{swap}', [RatingController::class, 'store'])->name('rating.store');
-});
 
-Route::middleware('auth')->get('/requests', [SwapController::class, 'incoming'])->name('requests.incoming');
-Route::middleware('auth')->group(function () {
-
+    /*
+    --------------------------
+     Profile
+    --------------------------
+    */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
-
+/*
+--------------------------------------------------------------------------
+ Admin
+--------------------------------------------------------------------------
+*/
 
 Route::prefix('admin')->middleware(['auth','admin'])->group(function () {
 
@@ -64,12 +108,8 @@ Route::prefix('admin')->middleware(['auth','admin'])->group(function () {
 
 });
 
-
-
-Route::get('/solar-wallpaper', function () {
-    return view('solar-wallpaper');
-});
-
-
+/*--------------------------------------------------------------------------
+ Auth (Breeze / Fortify)
+--------------------------------------------------------------------------*/
 
 require __DIR__.'/auth.php';
