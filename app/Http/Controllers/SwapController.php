@@ -47,6 +47,15 @@ class SwapController extends Controller
 
     return back()->with('success', '✅ Request sent!');
 }
+public function sent()
+{
+    $requests = \App\Models\SwapRequest::where('sender_id', auth()->id())
+        ->with('receiver')
+        ->latest()
+        ->get();
+
+    return view('dashboard.sent-requests', compact('requests'));
+}
 
     //  ACCEPT
    public function accept($id)
@@ -89,14 +98,21 @@ public function complete($id)
     return back()->with('success', 'Marked as completed!');
 }
 
-    public function incoming()
+public function incoming()
 {
-    $requests = SwapRequest::where('receiver_id', auth()->id())
-    ->with(['sender.skills']) // 🔥 IMPORTANT
-    ->latest()
-    ->get();
+    // 📥 incoming
+    $incoming = \App\Models\SwapRequest::where('receiver_id', auth()->id())
+        ->with('sender')
+        ->latest()
+        ->get();
 
-    return view('dashboard.requests', compact('requests'));
+    // 📤 sent
+    $sent = \App\Models\SwapRequest::where('sender_id', auth()->id())
+        ->with('receiver')
+        ->latest()
+        ->get();
+
+    return view('dashboard.requests', compact('incoming', 'sent'));
 }
 
 

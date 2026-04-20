@@ -18,7 +18,9 @@
 
             <!-- NAME -->
             <h3 class="text-lg font-semibold mb-2">
+            <a href="{{ route('user.profile', $u->id) }}" class="hover:underline">
                 {{ $u->name }}
+            </a>
             </h3>
 
             <!-- KNOW -->

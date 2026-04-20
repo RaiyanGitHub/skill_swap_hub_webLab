@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Skill;
+use App\Models\Rating;
 
 class User extends Authenticatable
 {
@@ -33,6 +34,15 @@ class User extends Authenticatable
     public function skills()
     {
         return $this->hasMany(Skill::class);
+    }
+    public function ratingsReceived()
+    {
+    return $this->hasMany(Rating::class, 'to_user_id');
+    }
+
+    public function ratingsGiven()
+    {
+    return $this->hasMany(Rating::class, 'from_user_id');
     }
 
 }

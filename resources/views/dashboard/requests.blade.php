@@ -1,103 +1,175 @@
 <x-app-layout>
 <div class="p-6 text-white">
 
-    <h2 class="text-2xl font-bold mb-6">📥 Incoming Requests</h2>
+    <h2 class="text-2xl font-bold mb-6">📥 Requests</h2>
 
     @if(session('success'))
         <div class="mb-4 text-green-400">{{ session('success') }}</div>
     @endif
 
-    @forelse($requests as $r)
+    @if(session('error'))
+        <div class="mb-4 text-red-400">{{ session('error') }}</div>
+    @endif
 
-    <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+    <!-- ===================== -->
+    <!-- 📥 INCOMING -->
+    <!-- ===================== -->
 
-        <!-- USER INFO -->
-        <h3 class="text-lg font-semibold mb-1">
-            {{ $r->sender->name }}
-        </h3>
+    <h3 class="text-xl mb-4 text-yellow-400">Incoming Requests</h3>
 
-        <!-- 🔵 KNOW SKILLS -->
-        <div class="mb-2">
-            <p class="text-green-400 text-sm">Knows:</p>
+    @forelse($incoming as $r)
 
-            <div class="flex flex-wrap gap-2 mt-1">
-                @foreach($r->sender->skills->where('type','know') as $skill)
-                    <span class="bg-green-500/20 px-2 py-1 rounded text-sm">
-                    {{ $skill->name }}
-                    </span>
-                @endforeach
-            </div>
-        </div>
+        <div class="bg-white/5 p-4 rounded-xl mb-4 border border-white/10">
+            <a href="{{ route('user.profile', $r->sender->id) }}" class="hover:underline">
+            <h3 class="font-semibold">{{ $r->sender->name }}</h3>
+            </a>
+            <p class="text-sm">Wants: <span class="text-blue-400">{{ $r->skill_requested }}</span></p>
+            <p class="text-sm mb-2">Offers: <span class="text-green-400">{{ $r->skill_offered }}</span></p>
 
-        <!-- 🔵 WANTS -->
-        <div class="mb-3">
-        <p class="text-blue-400 text-sm">Wants to learn:</p>
+            <p>Status:
+            <span class="text-yellow-400">{{ ucfirst($r->status) }}</span>
+            </p>
 
-            <div class="flex flex-wrap gap-2 mt-1">
-            @foreach($r->sender->skills->where('type','learn') as $skill)
-                <span class="bg-blue-500/20 px-2 py-1 rounded text-sm">
-                    {{ $skill->name }}
-                </span>
-            @endforeach
-            </div>
-        </div>
-        <!-- STATUS -->
-        <p class="mb-3">
-            Status:
-            <span class="
-                {{ $r->status == 'pending' ? 'text-yellow-400' : '' }}
-                {{ $r->status == 'accepted' ? 'text-green-400' : '' }}
-                {{ $r->status == 'rejected' ? 'text-red-400' : '' }}
-                {{ $r->status == 'completed' ? 'text-purple-400' : '' }}
-            ">
-                {{ ucfirst($r->status) }}
-            </span>
-        </p>
-
-        <!-- ACTION BUTTONS -->
-        @if($r->status == 'pending')
-            <div class="flex gap-2">
+            @if($r->status == 'pending')
+            <div class="flex gap-2 mt-2">
 
                 <form method="POST" action="{{ route('swap.accept', $r->id) }}">
                     @csrf
-                    <button class="px-3 py-1 bg-green-600 rounded">
-                        Accept
-                    </button>
+                    <button class="bg-green-600 px-3 py-1 rounded">Accept</button>
                 </form>
 
                 <form method="POST" action="{{ route('swap.reject', $r->id) }}">
                     @csrf
-                    <button class="px-3 py-1 bg-red-600 rounded">
-                        Reject
-                    </button>
+                    <button class="bg-red-600 px-3 py-1 rounded">Reject</button>
                 </form>
 
             </div>
-        @endif
+            @endif
 
-        @if($r->status == 'accepted')
+            @if($r->status == 'accepted')
             <a href="{{ route('video.call', $r->id) }}"
-                class="mt-2 inline-block px-4 py-1 bg-blue-600 rounded">
-                Skill Swap Session
-            </a>
-            <form method="POST" action="{{ route('swap.complete', $r->id) }}">
-                @csrf
-                <button class="mt-2 px-3 py-1 bg-purple-600 rounded" action="{{ route('swap.complete', $r->id) }}">
-                    Mark as Completed
-                </button>
-            </form>
-        @endif
+                class="mt-2 inline-block bg-blue-600 px-3 py-1 rounded">
+                🎥 Join Session
+                </a>
 
-         @if($r->status == 'completed')
-            <a href="{{ route('rating.store', $r->id) }}"
-                class="mt-2 inline-block px-4 py-1 bg-purple-600 rounded">
-                ⭐ Rate this Swap
-            </a>
-        @endif
+            <form method="POST" action="{{ route('swap.complete', $r->id) }}">
+                    @csrf
+                    <button class="mt-2 bg-purple-600 px-3 py-1 rounded">Complete</button>
+                </form>
+
+
+
+
+            @endif
+
+            @php
+        $alreadyRated = \App\Models\Rating::where('swap_request_id', $r->id)
+            ->where('from_user_id', auth()->id())
+            ->exists();
+    @endphp
+
+    @if($r->status == 'completed' && !$alreadyRated)
+
+        <form method="POST" action="{{ route('rating.store', $r->id) }}" class="mt-3">
+            @csrf
+
+            <select name="rating" required class="w-full mb-2 text-black">
+                <option value="">Rate Sender</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="1">⭐</option>
+            </select>
+            <!-- 💬 comment -->
+            <textarea name="comment"
+                placeholder="Write your feedback..."
+                class="w-full mb-2 px-2 py-1 rounded text-black"></textarea>
+
+            <!-- 🔥 sender কে rate -->
+            <input type="hidden" name="to_user_id" value="{{ $r->sender_id }}">
+
+            <button class="bg-yellow-500 px-3 py-1 rounded w-full">
+                Submit Rating
+            </button>
+        </form>
+
+    @endif
+
+    @if($alreadyRated)
+        <p class="text-green-400 mt-2">⭐ You already rated</p>
+    @endif
     </div>
 
     @empty
-        <p class="text-gray-400">No incoming requests 😢</p>
+        <p class="text-gray-400 mb-6">No incoming requests</p>
+    @endforelse
+
+
+    <!-- ===================== -->
+    <!-- 📤 SENT -->
+    <!-- ===================== -->
+
+    <h3 class="text-xl mb-4 text-blue-400 mt-8">Sent Requests</h3>
+
+    @forelse($sent as $r)
+
+    <div class="bg-white/5 p-4 rounded-xl mb-4 border border-white/10">
+        <a href="{{ route('user.profile', $r->receiver->id) }}" class="hover:underline">
+        <h3 class="font-semibold">{{ $r->receiver->name }}</h3>
+        </a>
+        <p class="text-sm">Wants: <span class="text-blue-400">{{ $r->skill_requested }}</span></p>
+        <p class="text-sm mb-2">Offers: <span class="text-green-400">{{ $r->skill_offered }}</span></p>
+
+        <p>Status:
+            <span class="text-yellow-400">{{ ucfirst($r->status) }}</span>
+        </p>
+        @if($r->status == 'accepted')
+
+        <a href="{{ route('video.call', $r->id) }}"
+       class="mt-2 inline-block bg-blue-600 px-3 py-1 rounded">
+       🎥 Join Session
+        </a>
+
+        @endif
+        <!-- ⭐ rating -->
+        @php
+            $alreadyRated = \App\Models\Rating::where('swap_request_id', $r->id)
+                ->where('from_user_id', auth()->id())
+                ->exists();
+        @endphp
+
+        @if($r->status == 'completed' && !$alreadyRated)
+
+            <form method="POST" action="{{ route('rating.store', $r->id) }}" class="mt-3">
+                @csrf
+
+                <select name="rating" required class="w-full mb-2 text-black">
+                    <option value="">Rate</option>
+                    <option value="5">⭐⭐⭐⭐⭐</option>
+                    <option value="4">⭐⭐⭐⭐</option>
+                    <option value="3">⭐⭐⭐</option>
+                    <option value="2">⭐⭐</option>
+                    <option value="1">⭐</option>
+                </select>
+                <!-- 💬 comment -->
+                <textarea name="comment"
+                placeholder="Write your feedback..."
+                class="w-full mb-2 px-2 py-1 rounded text-black"></textarea>
+
+                <input type="hidden" name="to_user_id" value="{{ $r->receiver_id }}">
+
+                <button class="bg-yellow-500 px-3 py-1 rounded w-full">
+                    Submit Rating
+                </button>
+            </form>
+
+        @endif
+
+    </div>
+
+    @empty
+        <p class="text-gray-400">No sent requests</p>
     @endforelse
 
 </div>

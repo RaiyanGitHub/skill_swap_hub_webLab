@@ -7,7 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SwapController;
 use App\Http\Controllers\RatingController;
-
+use App\Models\SwapRequest;
 /*
 --------------------------------------------------------------------------
  Public
@@ -36,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
     --------------------------
     */
     Route::prefix('dashboard')->group(function () {
-
+        Route::get('/user/{id}', [ProfileController::class, 'show'])->name('user.profile');
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/my-skills', [SkillController::class, 'index'])->name('dashboard.skills');
@@ -60,15 +60,33 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/swap/{id}/reject', [SwapController::class, 'reject'])->name('swap.reject');
     Route::post('/swap/{id}/complete', [SwapController::class, 'complete'])->name('swap.complete');
 
+    Route::get('/sent-requests', [SwapController::class, 'sent'])->name('requests.sent');
+/*
     /*
     |--------------------------
     | Video Call (Jitsi)
     |--------------------------
-    */
+    // NOTE: This route is just for demo. In real app, you should generate a unique room name for each swap and handle permissions properly.
     Route::get('/call/{id}', function ($id) {
         return view('video.call', ['room' => "swap_".$id."_".auth()->id()]);
     })->name('video.call');
+*/
+    Route::get('/call/{id}', function ($id) {
+   $swap = SwapRequest::findOrFail($id);
 
+    // ❌ not sender or receiver → block
+    if (
+        $swap->sender_id !== auth()->id() &&
+        $swap->receiver_id !== auth()->id()
+    ) {
+        abort(403);
+    }
+
+    return view('video.call', [
+        'room' => "swap_".$id
+    ]);
+
+    })->name('video.call');
 
     /*
     --------------------------
@@ -113,3 +131,4 @@ Route::prefix('admin')->middleware(['auth','admin'])->group(function () {
 --------------------------------------------------------------------------*/
 
 require __DIR__.'/auth.php';
+

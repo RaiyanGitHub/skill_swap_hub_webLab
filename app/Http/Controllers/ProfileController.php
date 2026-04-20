@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-
+use App\Models\User;
+use App\Models\Rating;
 class ProfileController extends Controller
 {
     /**
@@ -56,5 +57,19 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+    public function show($id)
+    {
+    $user = User::findOrFail($id);
+
+    $avgRating = Rating::where('to_user_id', $user->id)->avg('rating');
+    $totalReviews = Rating::where('to_user_id', $user->id)->count();
+
+    $reviews = Rating::where('to_user_id', $user->id)
+        ->with('fromUser')
+        ->latest()
+        ->get();
+
+    return view('profile.show', compact('user', 'avgRating', 'totalReviews', 'reviews'));
     }
 }
