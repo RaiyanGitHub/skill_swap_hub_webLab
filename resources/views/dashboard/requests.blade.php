@@ -29,7 +29,10 @@
             <p>Status:
             <span class="text-yellow-400">{{ ucfirst($r->status) }}</span>
             </p>
-
+            <a href="{{ route('chat', $r->sender_id) }}"
+                class="mt-2 block text-center bg-blue-500 py-2 rounded">
+                💬 Chat
+            </a>
             @if($r->status == 'pending')
             <div class="flex gap-2 mt-2">
 
@@ -47,6 +50,7 @@
             @endif
 
             @if($r->status == 'accepted')
+
             <a href="{{ route('video.call', $r->id) }}"
                 class="mt-2 inline-block bg-blue-600 px-3 py-1 rounded">
                 🎥 Join Session
@@ -56,10 +60,6 @@
                     @csrf
                     <button class="mt-2 bg-purple-600 px-3 py-1 rounded">Complete</button>
                 </form>
-
-
-
-
             @endif
 
             @php
@@ -124,6 +124,10 @@
         <p>Status:
             <span class="text-yellow-400">{{ ucfirst($r->status) }}</span>
         </p>
+        <a href="{{ route('chat', $r->receiver_id) }}"
+                class="mt-2 block text-center bg-blue-500 py-2 rounded">
+                💬 Chat
+        </a>
         @if($r->status == 'accepted')
 
         <a href="{{ route('video.call', $r->id) }}"

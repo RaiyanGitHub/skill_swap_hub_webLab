@@ -45,10 +45,12 @@
             </div>
 
             <!-- Messages -->
-            <div class="bg-white p-6 rounded shadow cursor-pointer hover:scale-105 transition">
-                <h2 class="text-red-500">Messages</h2>
-                <p class="text-xl font-bold">4</p>
-            </div>
+            <a href="{{ route('chat.inbox') }}">
+                <div class="bg-white p-6 rounded shadow hover:scale-105 transition">
+                    <h2 class="text-red-500">Messages</h2>
+                    <p class="text-xl font-bold">💬</p>
+                </div>
+            </a>
 
 
 

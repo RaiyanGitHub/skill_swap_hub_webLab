@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SwapRequest;
 use Illuminate\Database\QueryException;
-
+use App\Models\Notification;
+use App\Models\Rating;
+use App\Models\BannedEmail;
 
 class SwapController extends Controller
 {
@@ -33,7 +35,7 @@ class SwapController extends Controller
 
     try {
         // ✅ create
-        \App\Models\SwapRequest::create([
+        SwapRequest::create([
             'sender_id' => $sender,
             'receiver_id' => $id,
             'skill_offered' => $request->skill_offered,
@@ -44,12 +46,16 @@ class SwapController extends Controller
         // 🔥 DB level duplicate fallback (IMPORTANT)
         return back()->with('error', '⚠️ Duplicate request blocked!');
     }
-
+    Notification::create([
+    'user_id' => $id, // receiver
+    'type' => 'request',
+    'message' => auth()->user()->name . ' sent you a swap request'
+    ]);
     return back()->with('success', '✅ Request sent!');
 }
 public function sent()
 {
-    $requests = \App\Models\SwapRequest::where('sender_id', auth()->id())
+    $requests = SwapRequest::where('sender_id', auth()->id())
         ->with('receiver')
         ->latest()
         ->get();
@@ -68,6 +74,11 @@ public function sent()
 
     $swap->update(['status' => 'accepted']);
 
+    Notification::create([
+    'user_id' => $swap->sender_id,
+    'type' => 'accept',
+    'message' => auth()->user()->name . ' accepted your request'
+    ]);
     return back()->with('success', 'Accepted');
 }
 

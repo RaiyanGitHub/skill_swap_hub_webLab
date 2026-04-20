@@ -50,6 +50,22 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                <!-- Notifications button -->
+                <div class="ms-4">
+                <div class="relative">
+
+                    <button onclick="toggleNotif()" class="text-white">
+        🔔              <span id="count" class="text-red-400"></span>
+                    </button>
+
+                    <div id="notifBox"
+                        class="hidden absolute right-0 mt-2 w-64 bg-black text-white p-3 rounded shadow">
+
+                        <div id="notifList">Loading...</div>
+
+                    </div>
+
+                </div>
             </div>
 
             <!-- Hamburger -->
@@ -98,3 +114,37 @@
         </div>
     </div>
 </nav>
+
+<script>
+function toggleNotif() {
+    document.getElementById("notifBox").classList.toggle("hidden");
+}
+
+// 🔁 fetch notifications
+function loadNotifications() {
+    fetch('/notifications')
+        .then(res => res.json())
+        .then(data => {
+
+            let html = '';
+            let unread = 0;
+
+            data.forEach(n => {
+                if (!n.is_read) unread++;
+
+                html += `<div class="mb-2 border-b border-gray-700 pb-1">
+                    ${n.message}
+                </div>`;
+            });
+
+            document.getElementById("notifList").innerHTML = html;
+            document.getElementById("count").innerText = unread > 0 ? `(${unread})` : '';
+        });
+}
+
+// 🔁 every 5 sec
+setInterval(loadNotifications, 5000);
+
+// initial load
+loadNotifications();
+</script>

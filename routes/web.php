@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SwapController;
 use App\Http\Controllers\RatingController;
 use App\Models\SwapRequest;
+use App\Http\Controllers\ChatController;
 /*
 --------------------------------------------------------------------------
  Public
@@ -105,7 +106,15 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
+// setting route for notifications (for demo purposes, in real app this should be an API route and handled via AJAX)
+Route::get('/notifications', function () {
+    return \App\Models\Notification::where('user_id', auth()->id())
+        ->latest()
+        ->get();
+})->middleware('auth');
 
+Route::middleware('auth')->get('/messages', [ChatController::class, 'inbox'])
+    ->name('chat.inbox');
 /*
 --------------------------------------------------------------------------
  Admin
@@ -129,6 +138,15 @@ Route::prefix('admin')->middleware(['auth','admin'])->group(function () {
 /*--------------------------------------------------------------------------
  Auth (Breeze / Fortify)
 --------------------------------------------------------------------------*/
+Route::middleware('auth')->group(function () {
+
+    Route::get('/chat/{id}', [ChatController::class, 'index'])->name('chat');
+
+    Route::post('/chat/send', [ChatController::class, 'send']);
+
+    Route::get('/chat/fetch/{id}', [ChatController::class, 'fetch']);
+
+});
 
 require __DIR__.'/auth.php';
 
