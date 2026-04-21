@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Skill;
 use App\Models\Rating;
+use App\Models\Notification;
 
 class User extends Authenticatable
 {

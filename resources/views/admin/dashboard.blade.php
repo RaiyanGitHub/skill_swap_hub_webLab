@@ -25,7 +25,7 @@
 
                 <td>{{ $user->email }}</td>
 
-    <td class="flex gap-2">
+                <td class="flex gap-2">
 
         <!-- DELETE -->
         <form action="{{ route('admin.user.delete', $user->id) }}" method="POST">
